@@ -11,7 +11,7 @@ function HomePage() {
   async function getTravel() {
     try {
       const travels = await axios.get(
-        `http://localhost:4001/trips?keywords=${search}`
+        `https://travel-blog-server-bvz6.onrender.com/trips?keywords=${search}`
       );
       //   console.log(travels.data.data);
       setTravel(travels.data.data);
