@@ -7,8 +7,8 @@ function HomePage() {
   const [travel, setTravel] = useState([]);
   const [tag, setTag] = useState([]);
   const [textToCopy, setTextToCopy] = useState("");
-  const [loading, setloading] = useState < boolean > false;
-  const [isError, setIsError] = useState < boolean > false;
+  const [loading, setloading] = useState(false);
+  const [isError, setIsError] = useState(false);
 
   async function getTravel() {
     try {
