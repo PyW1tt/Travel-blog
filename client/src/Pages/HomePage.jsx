@@ -7,15 +7,21 @@ function HomePage() {
   const [travel, setTravel] = useState([]);
   const [tag, setTag] = useState([]);
   const [textToCopy, setTextToCopy] = useState("");
+  const [loading, setloading] = useState < boolean > false;
+  const [isError, setIsError] = useState < boolean > false;
 
   async function getTravel() {
     try {
+      setloading(true);
       const travels = await axios.get(
         `https://travel-blog-server-bvz6.onrender.com/trips?keywords=${search}`
       );
       //   console.log(travels.data.data);
       setTravel(travels.data.data);
+      setloading(false);
     } catch (error) {
+      setloading(false);
+      setIsError(true);
       console.log("request error");
     }
   }
@@ -61,60 +67,51 @@ function HomePage() {
           className=" w-5/6 text-center border-b-4  focus:outline-none focus:stroke-neutral-400"
         />
       </div>
-      <div className="w-full mt-14">
-        {travel.map((item, index) => {
-          let maxLength = item.tags.length;
-          return (
-            <div key={index} className="flex mt-10">
-              <div className="px-10 ">
-                <img
-                  className=" rounded-3xl w-[334px] h-[229px]"
-                  src={item.photos[0]}
-                />
-              </div>
-              <div className="flex flex-col justify-around">
-                <div>
-                  <a href={item.url} target="_blank">
-                    <p className=" text-2xl font-bold">{item.title}</p>
-                  </a>
+      {loading ? (
+        <p className="w-screen text-center">Loading ...</p>
+      ) : isError ? (
+        <p>Not Found</p>
+      ) : (
+        <div className="w-full mt-14">
+          {travel.map((item, index) => {
+            let maxLength = item.tags.length;
+            return (
+              <div key={index} className="flex mt-10">
+                <div className="px-10 ">
+                  <img
+                    className=" rounded-3xl w-[334px] h-[229px]"
+                    src={item.photos[0]}
+                  />
                 </div>
-                <div>
-                  <p>
-                    {item.description.length > 100
-                      ? item.description.slice(0, 100) + "..."
-                      : item.description}
-                  </p>
-                </div>
-                <div>
-                  <a
-                    href={item.url}
-                    target="_blank"
-                    className="text-sky-500 underline"
-                  >
-                    อ่านต่อ
-                  </a>
-                </div>
-                <div>
-                  <span className="mr-3">หมวด</span>
+                <div className="flex flex-col justify-around">
+                  <div>
+                    <a href={item.url} target="_blank">
+                      <p className=" text-2xl font-bold">{item.title}</p>
+                    </a>
+                  </div>
+                  <div>
+                    <p>
+                      {item.description.length > 100
+                        ? item.description.slice(0, 100) + "..."
+                        : item.description}
+                    </p>
+                  </div>
+                  <div>
+                    <a
+                      href={item.url}
+                      target="_blank"
+                      className="text-sky-500 underline"
+                    >
+                      อ่านต่อ
+                    </a>
+                  </div>
+                  <div>
+                    <span className="mr-3">หมวด</span>
 
-                  <span className="">
-                    {item.tags.map((tag, index) => {
-                      if (index !== maxLength - 1) {
-                        return (
-                          <button
-                            key={index}
-                            onClick={() => {
-                              handleClick(tag);
-                            }}
-                            className="mr-3 underline"
-                          >
-                            {tag}
-                          </button>
-                        );
-                      } else {
-                        return (
-                          <>
-                            <span className="mr-3">และ</span>
+                    <span className="">
+                      {item.tags.map((tag, index) => {
+                        if (index !== maxLength - 1) {
+                          return (
                             <button
                               key={index}
                               onClick={() => {
@@ -124,41 +121,56 @@ function HomePage() {
                             >
                               {tag}
                             </button>
-                          </>
-                        );
-                      }
+                          );
+                        } else {
+                          return (
+                            <>
+                              <span className="mr-3">และ</span>
+                              <button
+                                key={index}
+                                onClick={() => {
+                                  handleClick(tag);
+                                }}
+                                className="mr-3 underline"
+                              >
+                                {tag}
+                              </button>
+                            </>
+                          );
+                        }
+                      })}
+                    </span>
+                  </div>
+                  <div className="flex">
+                    {item.photos.slice(1).map((item, index) => {
+                      return (
+                        <div key={index} className="mr-5">
+                          <img
+                            src={item}
+                            className=" w-[100px] h-[100px] rounded-lg"
+                          />
+                        </div>
+                      );
                     })}
-                  </span>
-                </div>
-                <div className="flex">
-                  {item.photos.slice(1).map((item, index) => {
-                    return (
-                      <div key={index} className="mr-5">
-                        <img
-                          src={item}
-                          className=" w-[100px] h-[100px] rounded-lg"
-                        />
-                      </div>
-                    );
-                  })}
-                  <div className="w-[300px] flex">
-                    <button
-                      onClick={() => {
-                        setTextToCopy(item.url);
-                        navigator.clipboard.writeText(item.url);
-                        alert("copy");
-                      }}
-                      className=""
-                    >
-                      <i class="fa-solid fa-link"></i>
-                    </button>
+                    <div className="w-[300px] flex">
+                      <button
+                        onClick={() => {
+                          setTextToCopy(item.url);
+                          navigator.clipboard.writeText(item.url);
+                          alert("copy");
+                        }}
+                        className=""
+                      >
+                        <i class="fa-solid fa-link"></i>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </section>
   );
 }
